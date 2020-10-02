@@ -37,7 +37,7 @@ class SQLQuery(BaseQuery, Query):
         query = self.session.query(model) if not self._entities else self
         return self.session.query(query.filter_by(**filter_by).exists()).scalar()
 
-    def get_or_create(self, model=None, filter_by=None, **kwargs):
+    def get_or_create(self, model=None, filter_by=None, commit=False, **kwargs):
         """
         Initializes a model by creating it or getting it from the database if it exists
         Parameters
@@ -65,7 +65,8 @@ class SQLQuery(BaseQuery, Query):
             kwargs.update(filter_by)
             instance = model(**kwargs)
             self.session.add(instance)
-            self.session.commit()
+            if commit:
+                self.session.commit()
             result = instance
             created = True
         except IntegrityError:
