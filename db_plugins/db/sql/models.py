@@ -19,7 +19,7 @@ from sqlalchemy.orm import relationship
 from .. import generic
 
 from db_plugins.db.sql import Base
-
+import datetime
 
 class Commons:
     def __getitem__(self, field):
@@ -115,7 +115,7 @@ class Outlier(Base):
     outlier_version = Column(String, primary_key=True)
     score = Column(Float, nullable=False)
     created_on = Column(DateTime, default=datetime.datetime.now)
-    last_updated = Column(DateTime, onupdate=datetime.datetime.now)
+    last_updated = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now)
 
     __table_args__ = (
         Index("ix_outlier_oid", "oid", postgresql_using="hash"),
