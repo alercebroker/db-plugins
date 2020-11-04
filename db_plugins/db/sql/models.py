@@ -114,6 +114,8 @@ class Outlier(Base):
     class_name = Column(String, primary_key=True)
     outlier_version = Column(String, primary_key=True)
     score = Column(Float, nullable=False)
+    created_on = Column(DateTime, default=datetime.datetime.now)
+    last_updated = Column(DateTime, onupdate=datetime.datetime.now)
 
     __table_args__ = (
         Index("ix_outlier_oid", "oid", postgresql_using="hash"),
