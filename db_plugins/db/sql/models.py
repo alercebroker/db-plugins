@@ -105,9 +105,22 @@ class Probability(Base):
         Index("ix_probabilities_oid", "oid", postgresql_using="hash"),
         Index("ix_probabilities_probability", "probability", postgresql_using="btree"),
         Index("ix_probabilities_ranking", "ranking", postgresql_using="btree"),
-        Index("ix_classification_rank1", "ranking", postgresql_where=ranking==1, postgresql_using="btree")
+        Index("ix_classification_rank1", "ranking", postgresql_where=(ranking==1), postgresql_using="btree")
     )
 
+class Outlier(Base):
+    __tablename__ = "outlier"
+    oid = Column(String, ForeignKey(Object.oid), primary_key=True)
+    class_name = Column(String, primary_key=True)
+    outlier_version = Column(String, primary_key=True)
+    score = Column(Float, nullable=False)
+
+    __table_args__ = (
+        Index("ix_outlier_oid", "oid", postgresql_using="hash"),
+        Index("ix_outlier_class_name", "class_name", postgresql_using="hash"),
+        Index("ix_outlier_score", "score", postgresql_using="btree"),
+        Index("ix_outlier_outlier_version", "outlier_version", postgresql_using="btree")
+    )
 
 class FeatureVersion(Base):
     __tablename__ = "feature_version"
