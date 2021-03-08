@@ -105,7 +105,7 @@ class Probability(Base):
     classifier_version = Column(String, primary_key=True)
     probability = Column(Float, nullable=False)
     ranking = Column(Integer, nullable=False)
-
+    last_updated = Column(Integer, nullable=False)
     __table_args__ = (
         Index("ix_probabilities_oid", "oid", postgresql_using="hash"),
         Index("ix_probabilities_probability", "probability", postgresql_using="btree"),
