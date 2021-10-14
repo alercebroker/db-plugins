@@ -50,4 +50,5 @@ class MongoConnection(DatabaseConnection):
             db_conn.query(Probability).find(filter_by=**filters)
             db_conn.query().get_or_create(model=Object, filter_by=**filters)
         """
+        self.create_db()
         return MongoQuery(self, *args)

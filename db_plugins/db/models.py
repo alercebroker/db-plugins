@@ -2,8 +2,9 @@
 class Object():
     __tablename__ = "object"
 
-    alerce_id = None
-    survey_id = None
+    aid = None  # id alerce
+    oid = None  # oid survey
+    sid = None  # survey ZTF=1, ATLAS=2
     lastmjd = None
     firstmjd = None
     meanra = None
@@ -17,8 +18,8 @@ class Object():
 class Detection():
     __tablename__ = "detection"
 
-    aid = None
-    sid = None
+    aid = None  # id alerce
+    sid = None  # survey ZTF or ATLAS
     candid = None
     mjd = None
     fid = None
@@ -39,8 +40,8 @@ class Detection():
 class NonDetection():
     __tablename__ = "non_detection"
 
-    alerce_id = None
-    survey_id = None
+    aid = None
+    sid = None
     mjd = None
     diffmaglim = None
     fid = None

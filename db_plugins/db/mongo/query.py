@@ -4,7 +4,7 @@ from ..generic import BaseQuery, Pagination
 
 class MongoQuery(BaseQuery):
 
-    def __init__(self, connection, collection=None, **kwargs):
+    def __init__(self, connection, collection = None):
         """Get / create a Mongo collection.
 
         Raises :class:`TypeError` if `name` is not
@@ -64,26 +64,27 @@ class MongoQuery(BaseQuery):
         return result, created
 
 
-    def update(self, instance, args):
+    def update(self, collection=None, filter_by={"_id": id}, replacement=None):
         """
         Updates an object
         Parameter
         -----------
-        instance : Model
-            Object to be updated
+        collection : Model
+            Class of the model to be updated
+        filter_by : dict
+            attributes used to find object in the database
         args : dict
-            Attributes updated
+            Attributes to update
         Returns
         ----------
         instance
             The updated object instance
         """
 
+        self.__collection = self.__collection if self.__collection else collection
         mycolObj = self.__connection.db.__getitem__(self.__collection.__tablename__)
 
-        mycolObj.update_one(instance, args)
-
-        return instance
+        mycolObj.update(filter_by, { "$set": replacement })
 
     def bulk_insert(self, objects, collection=None):
         """
@@ -104,6 +105,13 @@ class MongoQuery(BaseQuery):
 
         self.__collection = self.__collection if self.__collection else collection
         mycolObj = self.__connection.db.__getitem__(self.__collection.__tablename__)
+
+        if self.__collection.__tablename__ == "object" :
+            for object in objects:
+                object['_id'] = object['aid']
+                # del object['aid']
+                object['loc'] = {"type": "Point", "coordinates": [object['meanra'] - 180, object['meandec']]}
+
         mycolObj.insert_many(objects)
 
 
@@ -178,9 +186,9 @@ class MongoQuery(BaseQuery):
         """
 
         self.__collection = self.__collection if self.__collection else collection
-        mycolObj = self.__connection.db.__getitem__(self.__collection.__tablename__)
+        mycolObj = self.__connection.db[self.__collection.__tablename__]
 
         if paginate:
             return self.paginate()
         else:
-            return mycolObj.find(filter_by)
+            return list(mycolObj.find(filter_by))
