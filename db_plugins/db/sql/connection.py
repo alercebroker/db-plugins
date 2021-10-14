@@ -4,10 +4,9 @@ from sqlalchemy.ext.declarative import declarative_base
 
 from .query import SQLQuery
 from ..generic import DatabaseConnection, DatabaseCreator
+from .models import Base
 
 MAP_KEYS = {"HOST", "USER", "PASSWORD", "PORT", "DB_NAME", "ENGINE"}
-
-Base = declarative_base()
 
 
 def satisfy_keys(config_keys):
@@ -22,6 +21,7 @@ class SQLDatabaseCreator(DatabaseCreator):
     def create_database(self) -> DatabaseConnection:
         return SQLConnection()
 
+
 class SQLConnection(DatabaseConnection):
     def __init__(self, config=None, engine=None, Base=None, Session=None, session=None):
         self.config = config
@@ -31,8 +31,8 @@ class SQLConnection(DatabaseConnection):
         self.session = session
 
     def connect(
-                self, config, base=None, session_options=None, use_scoped=False, scope_func=None
-        ):
+        self, config, base=None, session_options=None, use_scoped=False, scope_func=None
+    ):
         """
         Establishes connection to a database and initializes a session.
 
@@ -65,7 +65,9 @@ class SQLConnection(DatabaseConnection):
         self.config = config
         if len(satisfy_keys(set(config.keys()))) == 0:
             self.config["SQLALCHEMY_DATABASE_URL"] = settings_map(self.config)
-        self.engine = self.engine or create_engine(self.config["SQLALCHEMY_DATABASE_URL"])
+        self.engine = self.engine or create_engine(
+            self.config["SQLALCHEMY_DATABASE_URL"]
+        )
         self.Base = base or Base
         session_options = session_options or {}
         session_options["query_cls"] = SQLQuery
