@@ -23,6 +23,22 @@ def create_extra_fields(Model, **kwargs):
         return kwargs
 
 
+def create_magstats(**kwargs):
+    return kwargs.get("magstats", [])
+
+
+def create_features(**kwargs):
+    return kwargs.get("features", [])
+
+
+def create_probabilities(**kwargs):
+    return kwargs.get("probabilities", [])
+
+
+def create_xmatch(**kwargs):
+    return kwargs.get("xmatch", [])
+
+
 class Object(generic_models.Object, Base):
     """Mongo implementation of the Object class.
 
@@ -45,6 +61,10 @@ class Object(generic_models.Object, Base):
     loc = SpecialField(loc_definition)
     meanra = Field()
     meandec = Field()
+    magstats = SpecialField(create_magstats)
+    features = SpecialField(create_features)
+    probabilities = SpecialField(create_probabilities)
+    xmatch = SpecialField(create_xmatch)
     extra_fields = SpecialField(create_extra_fields)
 
     __table_args__ = [
@@ -101,3 +121,14 @@ class NonDetection(Base, generic_models.NonDetection):
         IndexModel([("aid", ASCENDING), ("tid", ASCENDING)]),
     ]
     __tablename__ = "non_detection"
+
+
+class Taxonomy(Base):
+    classifier_name = Field()
+    classifier_version = Field()
+    classes = Field()
+
+    __table_args__ = [
+        IndexModel([("classifier_name", ASCENDING), ("classifier_version", ASCENDING)]),
+    ]
+    __tablename__ = "taxonomy"

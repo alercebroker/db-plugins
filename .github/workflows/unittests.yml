@@ -4,8 +4,11 @@
 name: UnitTests
 
 on:
-  pull_request:
-    branches: [ main, develop ]
+  pull_request:    
+    branches:
+      - main
+      - develop
+      - 'feat/**'
 
 jobs:
   test:

@@ -1,4 +1,4 @@
-from db_plugins.db.generic import BaseQuery, Pagination
+from db_plugins.db.generic import BaseQuery, Pagination, PaginationNoCount
 from db_plugins.db.mongo.models import Base
 from pymongo.collection import Collection as PymongoCollection
 from pymongo import UpdateOne
@@ -182,7 +182,6 @@ def paginate(
     per_page=10,
     count=True,
     max_results=50000,
-    **kwargs,
 ):
     """Return pagination object with the results.
 
@@ -201,20 +200,32 @@ def paginate(
     if per_page < 0:
         per_page = 10
 
-    # Calculate number of documents to skip
-    skips = per_page * (page - 1)
+    if isinstance(filter_by, dict):
+        filter_by = [{"$match": filter_by}]
 
+    # Calculate number of documents to skip
+    filter_by.append({"$skip": per_page * (page - 1)})
+    filter_by.append({"$limit": per_page if count else per_page + 1})
     # Skip and limit
-    cursor = self.find(filter_by, **kwargs).skip(skips).limit(per_page)
+    cursor = self.aggregate(filter_by)
 
     # Return documents
-    items = [x for x in cursor]
+    items = list(cursor)
     if not count:
-        total = None
+        has_next = len(items) > per_page
+        items = items[:-1] if has_next else items
+        return PaginationNoCount(self, page, per_page, items, has_next)
     else:
-        all_docs = self.count_documents(filter_by)
-        total = all_docs if all_docs < max_results else max_results
-    return Pagination(self, page, per_page, total, items)
+        filter_by.pop()
+        filter_by.pop()
+        filter_by.append({"$limit": max_results})
+        filter_by.append({"$count": "n"})
+        summary = list(self.aggregate(filter_by))
+        try:
+            total = summary[0]["n"]
+        except IndexError:
+            total = 0
+        return Pagination(self, page, per_page, total, items)
 
 
 def find_one_creator(collection_class):
@@ -253,14 +264,17 @@ def find_all_creator(collection_class):
             whether to get a paginated result or not
         kwargs : dict
             all other arguments are passed to `paginate` and/or
-            `pymongo.collection.Collection.find`
+            `pymongo.collection.Collection.aggregate`
         """
         self.init_collection(model)
+
+        if isinstance(filter_by, dict):
+            filter_by = [{"$match": filter_by}]
 
         if paginate:
             return self.paginate(filter_by, **kwargs)
         else:
-            return collection_class.find(self, filter_by, **kwargs)
+            return collection_class.aggregate(self, filter_by, **kwargs)
 
     return find_all
 
