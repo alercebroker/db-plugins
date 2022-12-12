@@ -3,6 +3,7 @@ from db_plugins.db.mongo.models import Object
 import random
 
 random.seed(42)
+n_docs = int(1e5)
 
 
 def object_factory(index):
@@ -47,7 +48,7 @@ def object_factory(index):
 
 
 def generate_data():
-    return [object_factory(i) for i in range(10000)]
+    return [object_factory(i) for i in range(n_docs)]
 
 
 def load_data(connection: MongoConnection):
