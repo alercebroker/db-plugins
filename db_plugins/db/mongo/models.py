@@ -74,6 +74,11 @@ class Object(generic_models.Object, Base):
         IndexModel([("loc", GEOSPHERE)]),
         IndexModel([("meanra", ASCENDING)]),
         IndexModel([("meandec", ASCENDING)]),
+        IndexModel(
+            [
+                ("probabilities.probability", DESCENDING)
+            ]
+        )
     ]
     __tablename__ = "object"
 
