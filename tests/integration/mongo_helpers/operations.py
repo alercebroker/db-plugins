@@ -41,6 +41,4 @@ def find_objects_by_probability(connection: MongoConnection, classifier_name, cl
             }
             }}).explain()
 
-    pprint(connection.database.stats())
-
     return _get_execution_stats(query_info, True)
