@@ -1,6 +1,7 @@
 from pprint import pprint
 from db_plugins.db.mongo.connection import MongoConnection
 
+
 def _get_execution_stats(query_info, command=False):
     execution_stats = query_info["executionStats"]
     total_ms = execution_stats["executionTimeMillis"]
@@ -26,6 +27,7 @@ def find_object_explained(connection: MongoConnection, aid: str):
     ).explain()
 
     return _get_execution_stats(query_info)
+
 
 def find_objects_by_probability(connection: MongoConnection, classifier_name, class_name):
     query_info = connection.database.command("explain", 
