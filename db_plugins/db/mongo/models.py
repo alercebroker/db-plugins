@@ -82,7 +82,7 @@ class Object(generic_models.Object, Base):
                 ("probabilities.class_name", DESCENDING),
                 ("probabilities.probability", DESCENDING),
             ],
-            partialFilterExpression={"probabilities.ranking": 1}
+            # partialFilterExpression={"probabilities.ranking": 1}
         ),
     ]
     __tablename__ = "object"

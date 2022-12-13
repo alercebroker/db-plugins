@@ -6,6 +6,7 @@ from mongo_helpers.data_loader import load_data
 import unittest
 import pytest
 
+
 @pytest.mark.usefixtures("mongo_service")
 class MongoConnectionTest(unittest.TestCase):
     @classmethod

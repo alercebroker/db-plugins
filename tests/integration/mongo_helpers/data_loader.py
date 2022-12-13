@@ -9,10 +9,11 @@ n_docs = int(1e5)
 def object_factory(index):
     stamp_prob = round(random.random(), 5)
     lc_prob = round(random.random(), 5)
+    aid = f"aid{index}"
 
     return Object(
-        _id="aid{}".format(index),
-        aid="aid",
+        _id=aid,
+        aid=aid,
         oid=["oid{}".format(index)],
         tid=["tid{}".format(index)],
         lastmjd=50000.0,
