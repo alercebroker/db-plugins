@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from db_plugins.db.mongo.connection import MongoConnection
 
 
@@ -42,7 +44,7 @@ def find_objects_by_probability(connection: MongoConnection, classifier_name, cl
     query_info = connection.database["object"].find(
         {"probabilities":
             {"$elemMatch": {
-                "probability": {"$gte": 0.9},
+                "probability": {"$gte": 0.7},
                 "classifier_name": classifier_name,
                 "class_name": class_name,
                 "ranking": 1

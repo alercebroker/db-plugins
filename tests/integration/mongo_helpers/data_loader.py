@@ -8,8 +8,6 @@ n_class = 10
 
 
 def object_factory(index):
-    stamp_prob = round(random.random(), 5)
-    lc_prob = round(random.random(), 5)
     aid = f"aid{index}"
 
     return Object(
@@ -25,6 +23,7 @@ def object_factory(index):
         probabilities=generate_probabilities()
     )
 
+
 def generate_probabilities():
     classifiers = [
         "stamp_classifier",
@@ -36,8 +35,14 @@ def generate_probabilities():
 
     for classifier in classifiers:
         random.shuffle(classes)
-        class_probs = [random.random() for _ in classes]
-        class_probs = sorted([prob / sum(class_probs) for prob in class_probs], reverse=True)
+        class_probs = []
+        for i in range(n_class):
+            off = 0 if i == 0 else sum(class_probs)
+            if i == n_class - 1:
+                class_probs.append(1 - off)
+            else:
+                class_probs.append(random.random() * (1 - off))
+        class_probs.sort(reverse=True)
 
         generated_probabilities.extend(
             [
@@ -48,6 +53,7 @@ def generate_probabilities():
 
     return generated_probabilities
 
+
 def probability_factory(classifier_name, class_name, prob, rank):
     return {
         "classifier_name": classifier_name,
@@ -56,6 +62,7 @@ def probability_factory(classifier_name, class_name, prob, rank):
         "probability": prob,
         "ranking": rank,
     }
+
 
 def generate_data():
     return [object_factory(i) for i in range(n_docs)]
