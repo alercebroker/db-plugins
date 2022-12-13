@@ -1,27 +1,27 @@
-from pprint import pprint
-
 from db_plugins.db.mongo.connection import MongoConnection
 
 
-def _get_execution_stats(query_info, out=False):
+def _get_execution_stats(query_info, fh=None):
     execution_stats = query_info["executionStats"]
     total_ms = execution_stats["executionTimeMillis"]
     docs_examined = execution_stats["totalDocsExamined"]
     docs_returned = execution_stats["nReturned"]
     keys_examined = execution_stats["totalKeysExamined"]
 
-    if out:
-        print(f'\nResult\n  Time: {total_ms} ms\n  Docs returned {docs_returned}\n  Docs examined: {docs_examined}\n  Keys examined: {keys_examined}')
+    if fh:
+        fh.write(f',{total_ms},{docs_returned},{docs_examined},{keys_examined}\n')
+        print(f"{total_ms},{docs_returned},{docs_examined},{keys_examined}")
 
     return total_ms, docs_examined, keys_examined
 
 
-def _get_dbstats(dbstats_info):
+def _get_dbstats(dbstats_info, fh=None):
     index_size = dbstats_info["indexSize"]
     total_size = dbstats_info["totalSize"]
 
     conv = 1024 ** 2
-    print(f'\nDB\n  Total size: {total_size / conv:.1f} MB\n  Index size {index_size / conv: .1f} MB\n  Index proportion: {index_size / total_size:.3f}')
+    if fh:
+        fh.write(f',{total_size / conv:.3f},{index_size / conv:.3f}')
 
 
 def find_objects_batch_explained(connection: MongoConnection, aid_list: list):
@@ -40,7 +40,7 @@ def find_object_explained(connection: MongoConnection, aid: str):
     return _get_execution_stats(query_info)
 
 
-def find_objects_by_probability(connection: MongoConnection, classifier_name, class_name):
+def find_objects_by_probability(connection: MongoConnection, classifier_name, class_name, fh=None):
     query_info = connection.database["object"].find(
         {"probabilities":
             {"$elemMatch": {
@@ -52,6 +52,5 @@ def find_objects_by_probability(connection: MongoConnection, classifier_name, cl
             }}).explain()
 
     dbstats = connection.database.command("dbstats")
-    _get_dbstats(dbstats)
-
-    return _get_execution_stats(query_info, True)
+    _get_dbstats(dbstats, fh)
+    return _get_execution_stats(query_info, fh)

@@ -64,10 +64,10 @@ def probability_factory(classifier_name, class_name, prob, rank):
     }
 
 
-def generate_data():
-    return [object_factory(i) for i in range(n_docs)]
+def generate_data(ndocs, offset=0):
+    return [object_factory(i + offset) for i in range(ndocs)]
 
 
-def load_data(connection: MongoConnection):
-    data = generate_data()
+def load_data(connection: MongoConnection, ndocs: int, offset: int = 0):
+    data = generate_data(ndocs, offset)
     connection.database["object"].insert_many(data, ordered=False)
