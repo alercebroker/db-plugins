@@ -23,6 +23,8 @@ def _get_dbstats(dbstats_info, fh=None):
     if fh:
         fh.write(f',{total_size / conv:.3f},{index_size / conv:.3f}')
 
+    return total_size, index_size
+
 
 def find_objects_batch_explained(connection: MongoConnection, aid_list: list):
     query_info = connection.database["object"].find(

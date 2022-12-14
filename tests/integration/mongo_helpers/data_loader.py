@@ -3,8 +3,15 @@ from db_plugins.db.mongo.models import Object
 import random
 
 random.seed(42)
-n_docs = int(1e5)
-n_class = 10
+classifiers = {  # mapping of classifier name to number of classes in said classifier
+        "stamp_classifier": 5,
+        "lc_classifier": 15,
+        "lc_classifier_top": 3,
+        "lc_classifier_transient": 4,
+        "lc_classifier_stochastic": 5,
+        "lc_classifier_variable": 6
+    }
+n_features = 150
 
 
 def object_factory(index):
@@ -20,28 +27,22 @@ def object_factory(index):
         meanra=100.0,
         meandec=50.0,
         ndet=2,
-        probabilities=generate_probabilities()
+        probabilities=generate_probabilities(),
+        # features=generate_features(n_features)  # There's not much to do with features for now
     )
 
 
 def generate_probabilities():
-    classifiers = [
-        "stamp_classifier",
-        "lc_classifier"
-    ]
-    classes = [f"CLASS{i + 1}" for i in range(n_class)]
+    taxonomy = {name: [f"CLASS{i + 1}" for i in range(n_class)] for name, n_class in classifiers.items()}
 
     generated_probabilities = []
 
-    for classifier in classifiers:
+    for classifier, classes in taxonomy.items():
         random.shuffle(classes)
         class_probs = []
-        for i in range(n_class):
+        for i in range(len(classes)):
             off = 0 if i == 0 else sum(class_probs)
-            if i == n_class - 1:
-                class_probs.append(1 - off)
-            else:
-                class_probs.append(random.random() * (1 - off))
+            class_probs.append(1 - off if i == len(classes) - 1 else random.random() * (1 - off))
         class_probs.sort(reverse=True)
 
         generated_probabilities.extend(
@@ -61,6 +62,19 @@ def probability_factory(classifier_name, class_name, prob, rank):
         "class_name": class_name,
         "probability": prob,
         "ranking": rank,
+    }
+
+
+def generate_features(nfeatures):
+    return [feature_factory("name", 1.0, 1, "1.0.0") for _ in range(nfeatures)]
+
+
+def feature_factory(name, value, fid, version):
+    return {
+        "name": name,
+        "value": value,
+        "fid": fid,
+        "version": version
     }
 
 
