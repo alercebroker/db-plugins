@@ -3,7 +3,7 @@ try:
     import db_plugins
 except ImportError:
     import sys
-    sys.path.append(".")
+    sys.path.append("db_plugins")
     import db_plugins
 
 with open('requirements.txt', 'r') as fh:
@@ -19,14 +19,16 @@ setup(
     description='ALeRCE database plugins.',
     python_requires=">=3.6,<3.10",
     requires=requirements,
-    extra_requires=[
-        'psycopg2-binary',
-        'pytest',
-        'pytest-docker',
-        'coverage',
-        'alchemy_mock',
-        'mongomock',
-    ],
+    extra_requires={
+        'dev': [
+            'psycopg2-binary',
+            'pytest',
+            'pytest-docker',
+            'coverage',
+            'alchemy_mock',
+            'mongomock',
+        ]
+    },
     entry_points={
         'console-scripts': [
             'dbp=db_plugins.cli.manage:cli'
