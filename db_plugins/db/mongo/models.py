@@ -67,6 +67,7 @@ class Object(BaseModel):
 
 
 class Probability(BaseModel):
+    aid = Field()
     classifier_name = Field()
     classifier_version = Field()
     class_name = Field()
@@ -74,8 +75,19 @@ class Probability(BaseModel):
     ranking = Field()
 
     __table_args__ = [
-        IndexModel([("classifier_name", ASCENDING), ("class_name", ASCENDING), ("classifier_version", ASCENDING)], unique=True),
-        IndexModel([("probability", DESCENDING)], partialFilterExpression={"ranking": 1}),
+        IndexModel([("aid", ASCENDING)]),
+        IndexModel(
+            [
+                ("classifier_name", ASCENDING),
+                ("class_name", ASCENDING),
+                ("classifier_version", ASCENDING),
+                ("aid", ASCENDING),
+            ],
+            unique=True,
+        ),
+        IndexModel(
+            [("probability", DESCENDING)], partialFilterExpression={"ranking": 1}
+        ),
     ]
     __tablename__ = "probability"
 
@@ -128,7 +140,9 @@ class NonDetection(BaseModelWithExtraFields):
     __table_args__ = [
         IndexModel([("aid", ASCENDING)]),
         IndexModel([("tid", ASCENDING)]),
-        IndexModel([("oid", ASCENDING), ("fid", ASCENDING), ("mjd", ASCENDING)], unique=True),
+        IndexModel(
+            [("oid", ASCENDING), ("fid", ASCENDING), ("mjd", ASCENDING)], unique=True
+        ),
     ]
     __tablename__ = "non_detection"
 
@@ -140,7 +154,8 @@ class Taxonomy(BaseModel):
 
     __table_args__ = [
         IndexModel(
-            [("classifier_name", ASCENDING), ("classifier_version", DESCENDING)], unique=True
+            [("classifier_name", ASCENDING), ("classifier_version", DESCENDING)],
+            unique=True,
         ),
     ]
     __tablename__ = "taxonomy"
