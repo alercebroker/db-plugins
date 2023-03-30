@@ -66,6 +66,20 @@ class Object(BaseModel):
     __tablename__ = "object"
 
 
+class Probability(BaseModel):
+    classifier_name = Field()
+    classifier_version = Field()
+    class_name = Field()
+    probability = Field()
+    ranking = Field()
+
+    __table_args__ = [
+        IndexModel([("classifier_name", ASCENDING), ("class_name", ASCENDING), ("classifier_version", ASCENDING)], unique=True),
+        IndexModel([("probability", DESCENDING)], partialFilterExpression={"ranking": 1}),
+    ]
+    __tablename__ = "probability"
+
+
 class Detection(BaseModelWithExtraFields):
     @classmethod
     def create_extra_fields(cls, **kwargs):
@@ -104,11 +118,6 @@ class Detection(BaseModelWithExtraFields):
 
 
 class NonDetection(BaseModelWithExtraFields):
-    @classmethod
-    def create_extra_fields(cls, **kwargs):
-        kwargs = super().create_extra_fields(**kwargs)
-        return kwargs
-
     aid = Field()
     tid = Field()
     oid = Field()
