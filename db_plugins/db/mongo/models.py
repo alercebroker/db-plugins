@@ -55,10 +55,6 @@ class Object(BaseModel):
             "coordinates": [kwargs["meanra"] - 180, kwargs["meandec"]],
         }
     )
-    magstats = SpecialField(lambda **kwargs: kwargs.get("magstats", []))
-    features = SpecialField(lambda **kwargs: kwargs.get("features", []))
-    probabilities = SpecialField(lambda **kwargs: kwargs.get("probabilities", []))
-    xmatch = SpecialField(lambda **kwargs: kwargs.get("xmatch", []))
 
     __table_args__ = [
         IndexModel([("oid", ASCENDING)]),
@@ -66,15 +62,6 @@ class Object(BaseModel):
         IndexModel([("lastmjd", DESCENDING)]),
         IndexModel([("firstmjd", DESCENDING)]),
         IndexModel([("loc", GEOSPHERE)]),
-        IndexModel(
-            [
-                ("probabilities.ranking", DESCENDING),
-                ("probabilities.classifier_name", ASCENDING),
-                ("probabilities.classifier_version", DESCENDING),
-                ("probabilities.class_name", DESCENDING),
-                ("probabilities.probability", DESCENDING),
-            ],
-        ),
     ]
     __tablename__ = "object"
 
@@ -100,16 +87,18 @@ class Detection(BaseModelWithExtraFields):
     e_mag = Field()  # sigmapsf in ZTF alerts
     mag_corr = Field()  # magpsf_corr in ZTF alerts
     e_mag_corr = Field()  # sigmapsf_corr in ZTF alerts
+    e_mag_corr_ext = Field()  # sigmapsf_corr_ext in ZTF alerts
     isdiffpos = Field()
     corrected = Field()
     dubious = Field()
-    parent_candidate = Field()
+    stellar = Field()
     has_stamp = Field()
-    step_id_corr = Field()
 
     __table_args__ = [
-        IndexModel([("aid", ASCENDING), ("oid", ASCENDING)]),
+        IndexModel([("aid", ASCENDING)]),
+        IndexModel([("oid", ASCENDING)]),
         IndexModel([("tid", ASCENDING)]),
+        IndexModel([("mjd", ASCENDING)]),
     ]
     __tablename__ = "detection"
 
@@ -118,10 +107,8 @@ class NonDetection(BaseModelWithExtraFields):
     @classmethod
     def create_extra_fields(cls, **kwargs):
         kwargs = super().create_extra_fields(**kwargs)
-        kwargs.pop("candid", None)  # Prevents candid being duplicated in extra_fields
         return kwargs
 
-    _id = SpecialField(lambda **kwargs: kwargs.get("candid") or kwargs["_id"])
     aid = Field()
     tid = Field()
     oid = Field()
@@ -130,8 +117,9 @@ class NonDetection(BaseModelWithExtraFields):
     diffmaglim = Field()
 
     __table_args__ = [
-        IndexModel([("aid", ASCENDING), ("oid", ASCENDING)]),
+        IndexModel([("aid", ASCENDING)]),
         IndexModel([("tid", ASCENDING)]),
+        IndexModel([("oid", ASCENDING), ("fid", ASCENDING), ("mjd", ASCENDING)], unique=True),
     ]
     __tablename__ = "non_detection"
 
@@ -143,46 +131,7 @@ class Taxonomy(BaseModel):
 
     __table_args__ = [
         IndexModel(
-            [("classifier_name", ASCENDING), ("classifier_version", DESCENDING)]
+            [("classifier_name", ASCENDING), ("classifier_version", DESCENDING)], unique=True
         ),
     ]
     __tablename__ = "taxonomy"
-
-
-class Step(BaseModel):
-    step_id = Field()
-    name = Field()
-    version = Field()
-    comments = Field()
-    date = Field()
-
-    __table_args__ = [
-        IndexModel([("step_id", ASCENDING)]),
-    ]
-    __tablename__ = "step"
-
-
-class FeatureVersion(BaseModel):
-    version = Field()
-    step_id_feature = Field()
-    step_id_preprocess = Field()
-
-    __table_args__ = [
-        IndexModel([("version", ASCENDING)]),
-    ]
-    __tablename__ = "feature_version"
-
-
-class Pipeline(BaseModel):
-    pipeline_id = Field()
-    step_id_corr = Field()
-    step_id_feat = Field()
-    step_id_clf = Field()
-    step_id_out = Field()
-    step_id_stamp = Field()
-    date = Field()
-
-    __table_args__ = [
-        IndexModel([("pipeline_id", ASCENDING)]),
-    ]
-    __tablename__ = "pipeline"
