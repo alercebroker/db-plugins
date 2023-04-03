@@ -92,6 +92,43 @@ class Probability(BaseModel):
     __tablename__ = "probability"
 
 
+class MagStats(BaseModel):
+    __tablename__ = "magstat"
+
+    aid = Field()
+    fid = Field()
+    stellar = Field()
+    corrected = Field()
+    ndet = Field()
+    ndubious = Field()
+    dmdt_first = Field()
+    dm_first = Field()
+    sigmadm_first = Field()
+    dt_first = Field()
+    magmean = Field()
+    magmedian = Field()
+    magmax = Field()
+    magmin = Field()
+    magsigma = Field()
+    maglast = Field()
+    magfirst = Field()
+    magmean_corr = Field()
+    magmedian_corr = Field()
+    magmax_corr = Field()
+    magmin_corr = Field()
+    magsigma_corr = Field()
+    maglast_corr = Field()
+    magfirst_corr = Field()
+    firstmjd = Field()
+    lastmjd = Field()
+
+    __table_args__ = [
+        IndexModel([("aid", ASCENDING)]),
+        IndexModel([("fid", ASCENDING)]),
+        IndexModel([("aid", ASCENDING), ("fid", ASCENDING)], unique=True),
+    ]
+
+
 class Detection(BaseModelWithExtraFields):
     @classmethod
     def create_extra_fields(cls, **kwargs):
