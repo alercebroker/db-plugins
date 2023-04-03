@@ -157,7 +157,15 @@ class Feature(BaseModel):
 
     __table_args__ = [
         IndexModel([("aid", ASCENDING)]),
-        IndexModel([("name", ASCENDING), ("fid", ASCENDING), ("version", ASCENDING), ("aid", ASCENDING)], unique=True),
+        IndexModel(
+            [
+                ("name", ASCENDING),
+                ("fid", ASCENDING),
+                ("version", ASCENDING),
+                ("aid", ASCENDING),
+            ],
+            unique=True,
+        ),
     ]
 
 
