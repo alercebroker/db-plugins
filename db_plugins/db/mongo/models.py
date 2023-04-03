@@ -129,6 +129,23 @@ class MagStats(BaseModel):
     ]
 
 
+class Xmatch(BaseModel):
+    __tablename__ = "xmatch"
+
+    aid = Field()
+    catid = Field()
+    oid_catalog = Field()
+    dist = Field()
+    class_catalog = Field()
+    period = Field()
+
+    __table_args__ = [
+        IndexModel([("aid", ASCENDING)]),
+        IndexModel([("catid", ASCENDING)]),
+        IndexModel([("aid", ASCENDING), ("catid", ASCENDING)], unique=True),
+    ]
+
+
 class Detection(BaseModelWithExtraFields):
     @classmethod
     def create_extra_fields(cls, **kwargs):
