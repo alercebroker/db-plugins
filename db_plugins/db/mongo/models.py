@@ -146,6 +146,21 @@ class Xmatch(BaseModel):
     ]
 
 
+class Feature(BaseModel):
+    __tablename__ = "feature"
+
+    aid = Field()
+    name = Field()
+    value = Field()
+    fid = Field()
+    version = Field()
+
+    __table_args__ = [
+        IndexModel([("aid", ASCENDING)]),
+        IndexModel([("name", ASCENDING), ("fid", ASCENDING), ("version", ASCENDING), ("aid", ASCENDING)], unique=True),
+    ]
+
+
 class Detection(BaseModelWithExtraFields):
     @classmethod
     def create_extra_fields(cls, **kwargs):
