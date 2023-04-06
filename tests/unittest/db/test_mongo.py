@@ -48,8 +48,8 @@ class MongoConnectionTest(unittest.TestCase):
 
         self.conn.create_db()
         collections = self.conn.client[self.config["DATABASE"]].list_collection_names()
-        expected = ["object", "detection", "non_detection", "taxonomy", "step", "feature_version", "pipeline"]
-        self.assertEqual(collections, expected)
+        expected = ["object", "detection", "non_detection", "taxonomy", "feature", "magstat", "xmatch", "probability"]
+        self.assertEqual(set(collections), set(expected))
 
     @mock.patch('db_plugins.db.mongo.connection.MongoClient')
     def test_drop_db(self, mock_mongo):

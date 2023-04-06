@@ -45,15 +45,13 @@ class MongoModelsTest(unittest.TestCase):
             mag="mag",
             e_mag="e_mag",
             mag_corr="mag_corr",
+            stellar="stellar",
             e_mag_corr="e_mag_corr",
             e_mag_corr_ext="e_mag_corr_ext",
             parent_candidate="parent_candidate",
             e_ra="e_ra",
             e_dec="e_dec",
             isdiffpos="isdiffpos",
-            magpsf_corr="magpsf_corr",
-            sigmapsf_corr="sigmapsf_corr",
-            sigmapsf_corr_ext="sigmapsf_corr_ext",
             corrected="corrected",
             dubious="dubious",
             parent_candid="parent_candid",
@@ -83,14 +81,14 @@ class MongoModelsTest(unittest.TestCase):
             e_mag="e_mag",
             mag_corr="mag_corr",
             e_mag_corr="e_mag_corr",
-            parent_candidate="parent_candidate",
+            e_mag_corr_ext="e_mag_corr_ext",
             dubious="dubious",
             e_ra="e_ra",
             e_dec="e_dec",
             isdiffpos="isdiffpos",
             corrected="corrected",
+            stellar="stellar",
             has_stamp="has_stamp",
-            step_id_corr="step_id_corr",
             extra="extra",
         )
         self.assertEqual(o["extra_fields"], {"extra": "extra"})
@@ -113,19 +111,16 @@ class MongoModelsTest(unittest.TestCase):
             dubious="dubious",
             e_ra="e_ra",
             e_dec="e_dec",
+            stellar="stellar",
             isdiffpos="isdiffpos",
             corrected="corrected",
-            parent_candid="parent_candid",
             has_stamp="has_stamp",
-            step_id_corr="step_id_corr",
-            rbversion="rbversion",
             extra_fields={"extra": "extra"},
         )
         self.assertEqual(o["extra_fields"], {"extra": "extra"})
 
     def test_non_detection_creates(self):
         o = models.NonDetection(
-            candid="candid",
             aid="aid",
             oid="oid",
             tid="sid",
@@ -144,7 +139,6 @@ class MongoModelsTest(unittest.TestCase):
 
     def test_non_detection_with_extra_fields(self):
         o = models.NonDetection(
-            candid="candid",
             aid="aid",
             oid="oid",
             tid="tid",
@@ -155,7 +149,6 @@ class MongoModelsTest(unittest.TestCase):
         )
         self.assertEqual(o["extra_fields"], {"extra": "extra"})
         o = models.NonDetection(
-            candid="candid",
             aid="aid",
             oid="oid",
             tid="tid",
